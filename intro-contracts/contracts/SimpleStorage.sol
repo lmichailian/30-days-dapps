@@ -8,4 +8,8 @@ contract SimpleStorage {
     function setData(string memory _data) external {
         data = _data;
     }
+
+    function getData() view public returns(string memory) {
+        return data;
+    }
 }
