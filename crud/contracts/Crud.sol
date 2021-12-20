@@ -7,15 +7,18 @@ contract Crud {
         uint256 id;
         string name;
     }
-    User[] public users;
-    uint256 public nextId = 0;
+
+    mapping(uint256 => User) users;
+    uint256 public nextId = 1;
+
 
     function create(string memory name) public {
-        users.push(User(nextId, name));
+        users[nextId] = User(nextId, name);
         nextId++;
     }
 
     function read(uint256 id) public view returns (User memory) {
+        //require(users[id] != 0, "ERROR");
         return users[id];
     }
 
