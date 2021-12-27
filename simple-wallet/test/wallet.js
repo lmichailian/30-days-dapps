@@ -15,7 +15,7 @@ contract('Wallet', (accounts) => {
     it('should deposit founds', async () => {
         await wallet.deposit({ from: accounts[0], value: web3.utils.toWei('1') });
         const balanceOf = await wallet.balanceOf();
-        assert(BigInt(balanceOf) == '1000000000000000000')
+        assert(parseInt(balanceOf) == web3.utils.toWei('1'))
     })
 
     it('should send founds to other account', async () => {
@@ -23,7 +23,6 @@ contract('Wallet', (accounts) => {
         const previousBalance = await web3.eth.getBalance(accounts[1]);
         await wallet.send(accounts[1], web3.utils.toWei('1'), { from: accounts[0] })
         const currentAmount = await web3.eth.getBalance(accounts[1]);
-
-        assert(previousBalance + 1000000000000000000000, currentAmount)
+        assert(parseInt(previousBalance) + parseInt(web3.utils.toWei('1')) === parseInt(currentAmount))
     })
 })

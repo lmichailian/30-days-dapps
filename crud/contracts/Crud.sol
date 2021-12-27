@@ -8,28 +8,39 @@ contract Crud {
         string name;
     }
 
-    mapping(uint256 => User) users;
+    User[] public users;
     uint256 public nextId = 1;
 
     function create(string memory name) public {
-        users[nextId] = User(nextId, name);
+        users.push(User(nextId, name));
         nextId++;
     }
 
-    function read(uint256 id) public view userExists(id) returns (User memory) {
-        return users[id];
+    function getAll() public view returns (User[] memory) {
+        return users;
     }
 
-    function update(uint256 id, string memory name) public userExists(id) {
-        users[id].name = name;
+    function read(uint256 id) public view returns (User memory) {
+        uint256 i = find(id);
+        return users[i];
     }
 
-    function destroy(uint256 id) public userExists(id) {
-        delete users[id];
+    function update(uint256 id, string memory name) public {
+        uint256 i = find(id);
+        users[i].name = name;
     }
 
-    modifier userExists(uint256 id) {
-        require(users[id].id != 0, "User does not exists.");
-        _;
+    function destroy(uint256 id) public {
+        uint256 i = find(id);
+        delete users[i];
+    }
+
+    function find(uint256 id) internal view returns (uint256) {
+        for (uint256 i = 0; i < users.length; i++) {
+            if (users[i].id == id) {
+                return i;
+            }
+        }
+        revert("User does not exist!");
     }
 }

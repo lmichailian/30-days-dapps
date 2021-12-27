@@ -1,5 +1,5 @@
 import Web3 from 'web3'
-import Crud from '../contracts/Crud.json'
+import Wallet from '../contracts/Wallet.json'
 import detectEthereumProvider from '@metamask/detect-provider';
 import { useCallback, createContext, useEffect, useState } from 'react';
 
@@ -32,12 +32,12 @@ export const Web3Provider = ({ children }) => {
 
     const getContracts = async (web3) => {
         const networkId = await web3.eth.net.getId()
-        const deployedNetwork = Crud.networks[networkId]
-        const crud = new web3.eth.Contract(
-            Crud.abi,
+        const deployedNetwork = Wallet.networks[networkId]
+        const wallet = new web3.eth.Contract(
+            Wallet.abi,
             deployedNetwork && deployedNetwork.address
         );
-        setContract(crud)
+        setContract(wallet)
     }
 
     const init = useCallback(async () => {
@@ -52,9 +52,17 @@ export const Web3Provider = ({ children }) => {
         }
     }, [])
 
-    useEffect(() => {
+    const handleAccountChange = useCallback(() => {
         init()
     }, [init])
+
+    useEffect(() => {
+        const accountsChanged = window.ethereum.on('accountsChanged', handleAccountChange)
+        init()
+        return () => {
+            window.ethereum.removeEventListener('accountsChanged', accountsChanged)
+        }
+    }, [handleAccountChange, init])
 
     return (
         <Web3Context.Provider value={{ web3, contract, accounts }}>
